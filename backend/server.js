@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // =======================
-// Middleware
+// MIDDLEWARE
 // =======================
 app.use(cors());
 app.use(express.json());
@@ -29,10 +29,8 @@ const THINGSPEAK_URL =
   `?api_key=${THINGSPEAK_API_KEY}&results=50`;
 
 // =======================
-// ROUTES
+// HEALTH CHECK
 // =======================
-
-// Health check
 app.get('/health', (req, res) => {
   res.json({
     status: 'Backend running',
@@ -40,7 +38,9 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Fetch IoT data from ThingSpeak
+// =======================
+// THINGSPEAK DATA
+// =======================
 app.get('/api/data', async (req, res) => {
   try {
     const response = await axios.get(THINGSPEAK_URL, { timeout: 10000 });
@@ -58,7 +58,7 @@ app.get('/api/data', async (req, res) => {
 // ML SERVICE PROXY ROUTES
 // =======================
 
-// ML health
+// ML Health
 app.get('/api/ml/health', async (req, res) => {
   try {
     const response = await axios.get(`${ML_SERVICE_URL}/health`, { timeout: 5000 });
@@ -111,7 +111,54 @@ app.post('/api/ml/train-model', async (req, res) => {
   }
 });
 
-// System status
+// =======================
+// REPORT ROUTES (PROXIED)
+// =======================
+
+// JSON analytics report
+app.get('/api/report', async (req, res) => {
+  try {
+    const response = await axios.get(
+      `${ML_SERVICE_URL}/api/report`,
+      { timeout: 15000 }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error('Report error:', error.message);
+    res.status(500).json({
+      error: 'Failed to fetch report',
+      message: error.message
+    });
+  }
+});
+
+// PDF download
+app.get('/api/download-report', async (req, res) => {
+  try {
+    const response = await axios.get(
+      `${ML_SERVICE_URL}/api/download-report`,
+      { responseType: 'stream', timeout: 20000 }
+    );
+
+    res.setHeader(
+      'Content-Disposition',
+      response.headers['content-disposition'] || 'attachment; filename="report.pdf"'
+    );
+    res.setHeader('Content-Type', 'application/pdf');
+
+    response.data.pipe(res);
+  } catch (error) {
+    console.error('PDF error:', error.message);
+    res.status(500).json({
+      error: 'Failed to download PDF',
+      message: error.message
+    });
+  }
+});
+
+// =======================
+// SYSTEM STATUS
+// =======================
 app.get('/api/status', async (req, res) => {
   const status = {
     backend: 'running',
@@ -136,7 +183,11 @@ app.get('/api/status', async (req, res) => {
 // 404 HANDLER
 // =======================
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({
+    error: 'Route not found',
+    path: req.path,
+    method: req.method
+  });
 });
 
 // =======================
