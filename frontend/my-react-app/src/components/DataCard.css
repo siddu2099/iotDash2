@@ -1,0 +1,120 @@
+.data-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  animation: cardFadeIn 0.8s ease-out;
+}
+
+.data-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(138, 43, 226, 0.4);
+  border-color: rgba(138, 43, 226, 0.5);
+}
+
+.card-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 20px rgba(138, 43, 226, 0.6));
+  animation: iconPulse 3s ease-in-out infinite;
+}
+
+.card-content {
+  position: relative;
+  z-index: 2;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 16px 0;
+}
+
+.card-value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.value-number {
+  font-size: 48px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 0 30px rgba(138, 43, 226, 0.8);
+  line-height: 1;
+}
+
+.value-unit {
+  font-size: 20px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.card-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(138, 43, 226, 0.15) 0%, transparent 70%);
+  animation: glowRotate 8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 20px rgba(138, 43, 226, 0.6));
+  }
+  50% {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 30px rgba(138, 43, 226, 0.9));
+  }
+}
+
+@keyframes glowRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .data-card {
+    padding: 24px;
+  }
+  
+  .card-icon {
+    font-size: 36px;
+  }
+  
+  .value-number {
+    font-size: 36px;
+  }
+  
+  .value-unit {
+    font-size: 16px;
+  }
+}
